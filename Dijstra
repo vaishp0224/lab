@@ -1,0 +1,71 @@
+ import java.util.*; 
+public class DijkstraAlgo { 
+static final int NIL = -1; 
+public static void shortestPath(int[][] cost, int 
+start) { 
+int n = cost.length; 
+int[] dist = new int[n]; 
+boolean[] visited = new boolean[n]; 
+int[] parent = new int[n]; 
+for (int i = 0; i < n; i++) { 
+dist[i] = Integer.MAX_VALUE; 
+visited[i] = false; 
+} 
+dist[start] = 0; 
+parent[start] = NIL; 
+for (int count = 0; count < n - 1; count++) { 
+int u = -1; 
+int min = Integer.MAX_VALUE; 
+for (int v = 0; v < n; v++) { 
+if (!visited[v] && dist[v] < min) { 
+min = dist[v]; 
+u = v; 
+} 
+} 
+visited[u] = true; 
+for (int v = 0; v < n; v++) { 
+if (cost[u][v] != 0 && !visited[v] && 
+dist[u] + cost[u][v] < dist[v]) { 
+dist[v] = dist[u] + cost[u][v]; 
+parent[v] = u; 
+} 
+} 
+} 
+showPaths(start, dist, parent); 
+} 
+public static void showPaths(int src, int[] dist, 
+int[] parent) { 
+System.out.println("From\tTo\tCost\tPath")
+ ; 
+for (int i = 0; i < dist.length; i++) { 
+if (i != src) { 
+shortestPath(net, s); 
+System.out.print(src + "\t" + i + "\t" + 
+dist[i] + "\t"); 
+printRoute(i, parent); 
+System.out.println(); 
+} 
+} 
+} 
+public static void printRoute(int node, int[] 
+parent) { 
+if (node == NIL) return; 
+printRoute(parent[node], parent); 
+System.out.print(node + " "); 
+} 
+public static void main(String[] args) { 
+int[][] net = { 
+{0, 2, 4, 0, 0, 0}, 
+{2, 0, 1, 7, 0, 0}, 
+{4, 1, 0, 0, 3, 0}, 
+{0, 7, 0, 0, 2, 1}, 
+{0, 0, 3, 2, 0, 5}, 
+{0, 0, 0, 1, 5, 0} 
+}; 
+Scanner in = new Scanner(System.in); 
+System.out.print("Enter source router (0 - " 
++ (net.length - 1) + "): "); 
+int s = in.nextInt(); 
+in.close(); 
+} 
+} 
