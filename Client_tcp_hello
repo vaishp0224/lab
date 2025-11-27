@@ -1,0 +1,31 @@
+import java.io.*; 
+import java.net.*; 
+public class Client { 
+    public static void main(String[] args) throws IOException { 
+        Socket socket = new Socket("10.77.10.97", 1234);  
+        System.out.println("Connected to server."); 
+        BufferedReader input = new BufferedReader(new 
+InputStreamReader(socket.getInputStream())); 
+        PrintWriter output = new PrintWriter(socket.getOutputStream(), true); 
+        BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in)); 
+        String messageFromServer; 
+        String messageToServer; 
+        while (true) { 
+            System.out.print("You: "); 
+            messageToServer = keyboard.readLine(); 
+            output.println(messageToServer); 
+            if (messageToServer.equalsIgnoreCase("bye")) { 
+                break; 
+            } 
+            messageFromServer = input.readLine(); 
+            if (messageFromServer == null || messageFromServer.equalsIgnoreCase("bye")) { 
+                System.out.println("Server ended the chat."); 
+                break; 
+            } 
+            System.out.println("Server: " + messageFromServer); 
+        } 
+ 
+        socket.close(); 
+        System.out.println("Chat ended."); 
+    }
+}
