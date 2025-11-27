@@ -1,0 +1,42 @@
+import java.io.*; 
+import java.net.*; 
+ 
+public class ServerFile { 
+    public static void main(String[] args) { 
+        try (ServerSocket serverSocket = new ServerSocket(1234)) { 
+            System.out.println("Server is running and waiting for client..."); 
+ 
+            Socket socket = serverSocket.accept(); 
+            System.out.println("Client connected."); 
+ 
+            // === 1. Send file to client === 
+            File fileToSend = new File("serverfile.txt"); 
+            byte[] fileBytes = new byte[(int) fileToSend.length()]; 
+            BufferedInputStream bis = new BufferedInputStream(new 
+FileInputStream(fileToSend)); 
+            bis.read(fileBytes, 0, fileBytes.length); 
+ 
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream()); 
+            dos.writeInt(fileBytes.length); // send size 
+            dos.write(fileBytes);          // send data 
+            dos.flush(); 
+            bis.close(); 
+            System.out.println("Sent file to client."); 
+ 
+            // === 2. Receive file from client === 
+            DataInputStream dis = new DataInputStream(socket.getInputStream()); 
+            int fileSize = dis.readInt(); 
+            byte[] receivedBytes = new byte[fileSize]; 
+            dis.readFully(receivedBytes); 
+ 
+            FileOutputStream fos = new FileOutputStream("received_from_client.txt"); 
+            fos.write(receivedBytes); 
+            fos.close(); 
+            System.out.println("Received file from client and saved as received_from_client.txt"); 
+ 
+            socket.close(); 
+        } catch (IOException e) { 
+            e.printStackTrace(); 
+        } 
+    } 
+} 
