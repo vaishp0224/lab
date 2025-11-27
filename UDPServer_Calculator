@@ -1,0 +1,67 @@
+// File: UDPTrigServer.java
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
+public class UDPTrigServer {
+    public static void main(String[] args) {
+        DatagramSocket socket = null;
+
+        try {
+            socket = new DatagramSocket(9877);
+            System.out.println("UDP Trigonometry Server running on port 9877...");
+
+            while (true) {
+                byte[] receiveData = new byte[1024];
+                DatagramPacket receivePacket =
+                        new DatagramPacket(receiveData, receiveData.length);
+
+                System.out.println("Waiting for client request...");
+                socket.receive(receivePacket);
+
+                String request = new String(receivePacket.getData(),
+                        0, receivePacket.getLength());
+                System.out.println("Received: " + request);
+
+                String[] parts = request.split(" ");
+                String op = parts[0].toLowerCase();
+                double value = Double.parseDouble(parts[1]);
+
+                // Convert degrees to radians
+                double radians = Math.toRadians(value);
+                double result = 0;
+
+                switch (op) {
+                    case "sin":
+                        result = Math.sin(radians);
+                        break;
+                    case "cos":
+                        result = Math.cos(radians);
+                        break;
+                    case "tan":
+                        result = Math.tan(radians);
+                        break;
+                    default:
+                        result = Double.NaN;  // invalid
+                }
+
+                String reply = "Result: " + result;
+                byte[] sendData = reply.getBytes();
+
+                InetAddress clientAddress = receivePacket.getAddress();
+                int clientPort = receivePacket.getPort();
+
+                DatagramPacket sendPacket = new DatagramPacket(
+                        sendData, sendData.length, clientAddress, clientPort);
+
+                socket.send(sendPacket);
+                System.out.println("Result sent to client.\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (socket != null)
+                socket.close();
+        }
+    }
+}
